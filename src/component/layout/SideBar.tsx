@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Drawer,
@@ -25,6 +25,7 @@ import {
   Assessment as AssessmentIcon,
   ExpandLess,
   ExpandMore,
+  ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
 import logo from "../../assets/KolinLogo.png";
 import { useNavigate } from "react-router";
@@ -57,6 +58,13 @@ const menuItems = [
   },
 ];
 
+interface User {
+  userId: number;
+  username: string;
+  fullName: string;
+  personId: number | null;
+}
+
 export default function SidebarMenu({
   children,
 }: {
@@ -65,6 +73,22 @@ export default function SidebarMenu({
   const [open, setOpen] = useState(true);
   const [openSubMenus, setOpenSubMenus] = useState<string[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  const navigate = useNavigate();
+
+  // Kullanıcı bilgilerini localStorage'dan oku
+  useEffect(() => {
+    const userString = localStorage.getItem('user');
+    if (userString) {
+      try {
+        const userData = JSON.parse(userString);
+        setUser(userData);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -72,7 +96,6 @@ export default function SidebarMenu({
       setOpenSubMenus([]);
     }
   };
-  const navigate = useNavigate();
   const handleMenuItemClick = (path?: string) => {
     if (path) {
       navigate(path);
@@ -96,6 +119,20 @@ export default function SidebarMenu({
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    // localStorage'dan tüm auth bilgilerini temizle
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('expiresAt');
+    localStorage.removeItem('user');
+    
+    // Menüyü kapat
+    setAnchorEl(null);
+    
+    // Login sayfasına yönlendir
+    navigate('/login');
   };
 
   const renderMenuItems = (items: any[]) => {
@@ -292,11 +329,11 @@ export default function SidebarMenu({
           {/* Sağ taraf kullanıcı alanı */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ color: "#fff", fontWeight: 500 }}>
-              Test Kullanıcı
+              {user?.fullName || user?.username || "Kullanıcı"}
             </Typography>
             <IconButton onClick={handleAvatarClick} sx={{ p: 0 }}>
               <Avatar 
-                alt="Test" 
+                alt={user?.fullName || user?.username || "Kullanıcı"} 
                 src="/static/images/avatar/1.jpg"
                 sx={{
                   border: "2px solid rgba(255, 255, 255, 0.3)",
@@ -334,13 +371,20 @@ export default function SidebarMenu({
                 Profil
               </MenuItem>
               <MenuItem 
-                onClick={handleCloseMenu}
+                onClick={handleLogout}
                 sx={{
+                  color: "#dc2626",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
                   "&:hover": {
-                    background: "linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)",
+                    background: "linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%)",
+                    color: "#b91c1c",
                   },
+                  transition: "all 0.2s ease",
                 }}
               >
+                <ExitToAppIcon fontSize="small" />
                 Çıkış Yap
               </MenuItem>
             </Menu>
