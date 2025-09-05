@@ -21,14 +21,13 @@ import {
 import {
   Menu as MenuIcon,
   Home as HomeIcon,
-  Business as BusinessIcon,
-  Assessment as AssessmentIcon,
   ExpandLess,
   ExpandMore,
   ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
 import logo from "../../assets/KolinLogo.png";
 import { useNavigate } from "react-router";
+import { clearAllAuthData } from "../../hooks/useAuthCleanup";
 
 const drawerWidth = 300;
 const miniDrawerWidth = 70;
@@ -41,19 +40,6 @@ const menuItems = [
       { text: "Quotation-My Step", path: "/quotation-my-step" },
       { text: "Quotation-ALL", path: "/quotation-all" },
       { text: "Past Approved / Rejected Quotes", path: "/past-quotes" },
-    ],
-  },
-  {
-    text: "Kolin Financials",
-    icon: <BusinessIcon />,
-    children: [],
-    path: "/financials",
-  },
-  {
-    text: "KSA T.O.",
-    icon: <AssessmentIcon />,
-    children: [
-      { text: "Supplier Invoice Analysis", path: "/supplier-invoice-analysis" },
     ],
   },
 ];
@@ -79,13 +65,13 @@ export default function SidebarMenu({
 
   // Kullanıcı bilgilerini localStorage'dan oku
   useEffect(() => {
-    const userString = localStorage.getItem('user');
+    const userString = localStorage.getItem("user");
     if (userString) {
       try {
         const userData = JSON.parse(userString);
         setUser(userData);
       } catch (error) {
-        console.error('Error parsing user data:', error);
+        console.error("Error parsing user data:", error);
       }
     }
   }, []);
@@ -122,17 +108,14 @@ export default function SidebarMenu({
   };
 
   const handleLogout = () => {
-    // localStorage'dan tüm auth bilgilerini temizle
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('expiresAt');
-    localStorage.removeItem('user');
-    
+    // Tüm auth bilgilerini temizle (utility fonksiyonu kullan)
+    clearAllAuthData();
+
     // Menüyü kapat
     setAnchorEl(null);
-    
+
     // Login sayfasına yönlendir
-    navigate('/login');
+    navigate("/login");
   };
 
   const renderMenuItems = (items: any[]) => {
@@ -280,8 +263,8 @@ export default function SidebarMenu({
         position="fixed"
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
-         background: "#360165", // BURADA TEK RENK
-    boxShadow: "0 4px 25px rgba(54,0,101,0.4)", // Mor tonlu gölge
+          background: "#360165", // BURADA TEK RENK
+          boxShadow: "0 4px 25px rgba(54,0,101,0.4)", // Mor tonlu gölge
           width: `calc(100% - ${open ? drawerWidth : miniDrawerWidth}px)`,
           ml: `${open ? drawerWidth : miniDrawerWidth}px`,
           transition: (theme) =>
@@ -332,8 +315,8 @@ export default function SidebarMenu({
               {user?.fullName || user?.username || "Kullanıcı"}
             </Typography>
             <IconButton onClick={handleAvatarClick} sx={{ p: 0 }}>
-              <Avatar 
-                alt={user?.fullName || user?.username || "Kullanıcı"} 
+              <Avatar
+                alt={user?.fullName || user?.username || "Kullanıcı"}
                 src="/static/images/avatar/1.jpg"
                 sx={{
                   border: "2px solid rgba(255, 255, 255, 0.3)",
@@ -353,24 +336,26 @@ export default function SidebarMenu({
               transformOrigin={{ vertical: "top", horizontal: "right" }}
               sx={{
                 "& .MuiPaper-root": {
-                  background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+                  background:
+                    "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
                   border: "1px solid rgba(139, 92, 246, 0.1)",
                   borderRadius: 2,
                   boxShadow: "0 10px 30px rgba(139, 92, 246, 0.15)",
                 },
               }}
             >
-              <MenuItem 
+              <MenuItem
                 onClick={handleCloseMenu}
                 sx={{
                   "&:hover": {
-                    background: "linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)",
+                    background:
+                      "linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)",
                   },
                 }}
               >
                 Profil
               </MenuItem>
-              <MenuItem 
+              <MenuItem
                 onClick={handleLogout}
                 sx={{
                   color: "#dc2626",
@@ -378,7 +363,8 @@ export default function SidebarMenu({
                   alignItems: "center",
                   gap: 1,
                   "&:hover": {
-                    background: "linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%)",
+                    background:
+                      "linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%)",
                     color: "#b91c1c",
                   },
                   transition: "all 0.2s ease",
@@ -402,7 +388,8 @@ export default function SidebarMenu({
           "& .MuiDrawer-paper": {
             width: open ? drawerWidth : miniDrawerWidth,
             boxSizing: "border-box",
-            background: "linear-gradient(180deg, #fefefe 0%, #f8fafc 50%, #f1f5f9 100%)",
+            background:
+              "linear-gradient(180deg, #fefefe 0%, #f8fafc 50%, #f1f5f9 100%)",
             borderRight: "1px solid rgba(139, 92, 246, 0.1)",
             overflowX: "hidden",
             boxShadow: "4px 0 20px rgba(139, 92, 246, 0.08)",
@@ -414,17 +401,20 @@ export default function SidebarMenu({
           },
         }}
       >
-        <Box sx={{ 
-          px: 3, 
-          py: 2,
-          mb: 2, 
-          display: "flex", 
-          justifyContent: "center",
-          background: "linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%)",
-          borderRadius: open ? 2 : 0,
-          mx: open ? 1 : 0,
-          mt: 1,
-        }}>
+        <Box
+          sx={{
+            px: 3,
+            py: 2,
+            mb: 2,
+            display: "flex",
+            justifyContent: "center",
+            background:
+              "linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%)",
+            borderRadius: open ? 2 : 0,
+            mx: open ? 1 : 0,
+            mt: 1,
+          }}
+        >
           <img
             src={logo}
             alt="Kolin Logo"
@@ -443,8 +433,7 @@ export default function SidebarMenu({
               sx={{
                 mb: 2,
                 mx: 2,
-                background:
-                  "#360165",
+                background: "#360165",
                 height: 2,
                 borderRadius: 1,
               }}
@@ -460,7 +449,8 @@ export default function SidebarMenu({
         sx={{
           flexGrow: 1,
           p: 3,
-          background: "linear-gradient(135deg, #faf5ff 0%, #f3f4f6 50%, #f8fafc 100%)",
+          background:
+            "linear-gradient(135deg, #faf5ff 0%, #f3f4f6 50%, #f8fafc 100%)",
           minHeight: "100vh",
         }}
       >

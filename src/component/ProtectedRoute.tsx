@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router';
 import { Box, CircularProgress, Typography, Fade } from '@mui/material';
+import { clearAllAuthData } from '../hooks/useAuthCleanup';
 import { Shield as ShieldIcon } from '@mui/icons-material';
 
 interface ProtectedRouteProps {
@@ -52,10 +53,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         if (currentDate >= expirationDate) {
           console.log('Auth check failed: Token expired');
           // Süresi dolmuş token'ları temizle
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('expiresAt');
-          localStorage.removeItem('user');
+          clearAllAuthData();
           return false;
         }
       }
